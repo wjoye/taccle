@@ -1,5 +1,3 @@
-$Id: README,v 1.5 2005/03/17 20:42:21 tang Exp $
-
 Copyright
 ---------
 taccle itself is protected by the GNU General Public License.  See the
