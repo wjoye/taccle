@@ -20,6 +20,7 @@ language what yacc and bison do for C and C++.
 
 This release of taccle implements nearly all features of yacc:
  - %token and %start declarations
+ - %define parse.error verbose declaration
  - epsilon transitions (i.e., "empty" rules)
  - embedded (mid-rule) actions
  - literal tokens
