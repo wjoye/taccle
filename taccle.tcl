@@ -2,13 +2,21 @@
 
 # $Id: taccle.tcl,v 1.6 2005/03/17 20:42:21 tang Exp $
 
+<<<<<<< HEAD
+set TACCLE_VERSION 1.3
+=======
 set TACCLE_VERSION 1.2
+>>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
 
 # no yydebug
 # no YYDEBUG
 # no yyerrok
 # no YYERROR
 # no YYRECOVERING
+<<<<<<< HEAD
+# add %define parse.error verbose
+=======
+>>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
 
 #//#
 # Taccle is another compiler compiler written in pure Tcl.  reads a
@@ -60,6 +68,11 @@ proc handle_defs {line} {
                 }
                 set ::start_symbol $args
             }
+	    "%define" {
+		if {$args == {parse.error verbose}} {
+		    set ::parse_error 1
+		}
+	    }
             default {
                 taccle_error "Unknown declaration \"$keyword\"" $::SYNTAX_ERROR
             }
@@ -892,6 +905,13 @@ proc write_parser {} {
     write_array $::dest ${::p}::rules [array get ::rule_table *l]
     write_array $::dest ${::p}::rules [array get ::rule_table *dc]
     write_array $::dest ${::p}::rules [array get ::rule_table *e]
+<<<<<<< HEAD
+    if {$::parse_error} {
+	write_array $::dest ${::p}::lr1_table [array get ::lr1_table]
+	write_array $::dest ${::p}::token_id_table [array get ::token_id_table]
+    }
+=======
+>>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
     
     puts $::dest "\nproc ${::p}::yyparse {} {
     variable yylval
@@ -899,7 +919,14 @@ proc write_parser {} {
     variable rules
     variable token
     variable yycnt
+<<<<<<< HEAD
+    variable lr1_table
+    variable token_id_table
 
+    set yycnt 0
+=======
+
+>>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
     set state_stack {0}
     set value_stack {{}}
     set token \"\"
@@ -916,6 +943,10 @@ proc write_parser {} {
             }
         }
         if {!\[info exists table(\$state:\$token)\]} {
+<<<<<<< HEAD
+	    set save_state \$state
+=======
+>>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
             \# pop off states until error token accepted
             while {\[llength \$state_stack\] > 0 && \\
                        !\[info exists table(\$state:error)]} {
@@ -924,8 +955,35 @@ proc write_parser {} {
                                        \[expr {\[llength \$state_stack\] - 1}\]\]
                 set state \[lindex \$state_stack end\]
             }
+<<<<<<< HEAD
+            if {\[llength \$state_stack\] == 0} {"
+    if {$::parse_error} {
+puts $::dest " 
+	        set rr { }
+                if {\[info exists lr1_table(\$save_state,trans)\] && \[llength \$lr1_table(\$save_state,trans)\] >= 1} {
+                    foreach trans \$lr1_table(\$save_state,trans) {
+                        foreach {tok_id nextstate} \$trans {
+			    set ss \$token_id_table(\$tok_id)
+			    set ss \[string trimright \$ss {_}\]
+			    if {\[string is upper \$ss\]} {
+			        append rr \"\$ss, \"
+                            }
+                        }
+                    }
+                }
+		set rr \[string trimleft \$rr { }\]
+		set rr \[string trimright \$rr {, }\]
+                yyerror \"parse error, expecting: \$rr\"
+"
+    } else {
+puts $::dest " 
+                yyerror \"parse error\""
+    }
+puts $::dest "
+=======
             if {\[llength \$state_stack\] == 0} {
                 yyerror \"parse error\"
+>>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
                 return 1
             }
             lappend state_stack \[set state \$table(\$state:error,target)\]
@@ -1023,8 +1081,11 @@ proc write_header_file {} {
             puts $::header "set ${token} $tok_id"
         }
     }
+<<<<<<< HEAD
+=======
     puts $::header "set yylval \{\}"
     puts $::header "\}"
+>>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
 }
 
 ######################################################################
@@ -1481,6 +1542,7 @@ proc taccle_args {argv} {
     set argvp 0
     set write_defs_file 0
     set write_verbose_file 0
+    set ::parse_error 0
     set out_filename ""
     set ::p "yy"
     set ::show_warnings 0
@@ -1515,13 +1577,14 @@ proc taccle_args {argv} {
         print_taccle_help stderr
         exit $::IO_ERROR
     }
-    set in_filename [lindex $argv $argvp]
+    set ::in_filename [lindex $argv $argvp]
+    set ::in_dir [file dirname $::in_filename]
     if {$out_filename == ""} {
-        set out_filename [file rootname $in_filename]
+        set out_filename [file rootname $::in_filename]
         append out_filename ".tcl"
     }
-    if [catch {open $in_filename r} ::src] {
-        puts stderr "Could not open grammar file '$in_filename'."
+    if [catch {open $::in_filename r} ::src] {
+        puts stderr "Could not open grammar file '$::in_filename'."
         exit $::IO_ERROR
     }
     if [catch {open $out_filename w} ::dest] {
@@ -1582,7 +1645,22 @@ proc taccle_main {} {
             }
         } else {
             if {$file_state == "definitions"} {
-                handle_defs $line
+		if {[lindex $line 0] == "#include"} {
+		    set fn [lindex $line 1]
+		    if {$fn != {}} {
+			if [catch {open [file join $::in_dir $fn] r} ch] {
+			    puts stderr "Could not open definition file '$fn'."
+			    exit $::IO_ERROR
+			}
+			while {[gets $ch line] >= 0} {
+			    incr ::line_count
+			    handle_defs $line
+			}			    
+			catch {close $fn}
+		    }
+		} else {
+		    handle_defs $line
+		}
             } elseif {$file_state == "rules"} {
                 # keep reading the rest of the file until EOF or
                 # another '%%' appears
@@ -1590,6 +1668,19 @@ proc taccle_main {} {
                 while {[gets $::src line] >= 0 && $file_state == "rules"} {
                     if {$line == "%%"} {
                         set file_state "subroutines"
+		    } elseif {[lindex $line 0] == "#include"} {
+			set fn [lindex $line 1]
+			if {$fn != {}} {
+			    if [catch {open [file join $::in_dir $fn] r} ch] {
+				puts stderr "Could not open include file '$fn'."
+				exit $::IO_ERROR
+			    }
+			    while {[gets $ch line] >= 0} {
+				incr ::line_count
+				append rules_buf "\n" [strip_comments $line]
+			    }			    
+			    catch {close $fn}
+			}
                     } else {
                         append rules_buf "\n" [strip_comments $line]
                     }
