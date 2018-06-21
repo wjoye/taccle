@@ -959,7 +959,8 @@ puts $::dest "
 "
     } else {
 puts $::dest " 
-                yyerror \"parse error\""
+                yyerror \"parse error\"
+"
     }
 puts $::dest "
                 return 1
@@ -1051,7 +1052,6 @@ proc write_array {fd name values} {
 # Writes a header file that should be [source]d by the lexer.
 proc write_header_file {} {
     # scan through token_table and write out all non-implicit terminals
-    puts $::header "namespace eval ${::p} \{"
     foreach tok_id $::token_list {
         if {$::token_id_table($tok_id,t) == $::TERMINAL && \
                 [string is integer $tok_id] && $tok_id >= 256} {
