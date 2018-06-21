@@ -2,21 +2,14 @@
 
 # $Id: taccle.tcl,v 1.6 2005/03/17 20:42:21 tang Exp $
 
-<<<<<<< HEAD
 set TACCLE_VERSION 1.3
-=======
-set TACCLE_VERSION 1.2
->>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
 
 # no yydebug
 # no YYDEBUG
 # no yyerrok
 # no YYERROR
 # no YYRECOVERING
-<<<<<<< HEAD
 # add %define parse.error verbose
-=======
->>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
 
 #//#
 # Taccle is another compiler compiler written in pure Tcl.  reads a
@@ -905,13 +898,10 @@ proc write_parser {} {
     write_array $::dest ${::p}::rules [array get ::rule_table *l]
     write_array $::dest ${::p}::rules [array get ::rule_table *dc]
     write_array $::dest ${::p}::rules [array get ::rule_table *e]
-<<<<<<< HEAD
     if {$::parse_error} {
 	write_array $::dest ${::p}::lr1_table [array get ::lr1_table]
 	write_array $::dest ${::p}::token_id_table [array get ::token_id_table]
     }
-=======
->>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
     
     puts $::dest "\nproc ${::p}::yyparse {} {
     variable yylval
@@ -919,14 +909,10 @@ proc write_parser {} {
     variable rules
     variable token
     variable yycnt
-<<<<<<< HEAD
     variable lr1_table
     variable token_id_table
 
     set yycnt 0
-=======
-
->>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
     set state_stack {0}
     set value_stack {{}}
     set token \"\"
@@ -943,10 +929,7 @@ proc write_parser {} {
             }
         }
         if {!\[info exists table(\$state:\$token)\]} {
-<<<<<<< HEAD
 	    set save_state \$state
-=======
->>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
             \# pop off states until error token accepted
             while {\[llength \$state_stack\] > 0 && \\
                        !\[info exists table(\$state:error)]} {
@@ -955,7 +938,6 @@ proc write_parser {} {
                                        \[expr {\[llength \$state_stack\] - 1}\]\]
                 set state \[lindex \$state_stack end\]
             }
-<<<<<<< HEAD
             if {\[llength \$state_stack\] == 0} {"
     if {$::parse_error} {
 puts $::dest " 
@@ -980,10 +962,6 @@ puts $::dest "
                 yyerror \"parse error\""
     }
 puts $::dest "
-=======
-            if {\[llength \$state_stack\] == 0} {
-                yyerror \"parse error\"
->>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
                 return 1
             }
             lappend state_stack \[set state \$table(\$state:error,target)\]
@@ -1081,11 +1059,6 @@ proc write_header_file {} {
             puts $::header "set ${token} $tok_id"
         }
     }
-<<<<<<< HEAD
-=======
-    puts $::header "set yylval \{\}"
-    puts $::header "\}"
->>>>>>> 72eed94966e1b4a985121c68840a6789f4e3c742
 }
 
 ######################################################################
